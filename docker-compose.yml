@@ -1,0 +1,59 @@
+services:
+  # ── MongoDB ────────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    container_name: ainews_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ainews
+
+  # ── Backend API ────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ainews_backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongo:27017/ainews
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      NEWS_API_KEY: ${NEWS_API_KEY}
+      GNEWS_API_KEY: ${GNEWS_API_KEY}
+      GUARDIAN_API_KEY: ${GUARDIAN_API_KEY}
+      NEWS_PROVIDER: ${NEWS_PROVIDER:-newsapi}
+      NEWS_CACHE_TTL: ${NEWS_CACHE_TTL:-300}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  # ── Frontend (dev only — in prod, serve the build via backend) ─────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: ainews_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: ""   # empty = uses Vite proxy → backend:5000
+      BACKEND_URL: "http://backend:5000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:

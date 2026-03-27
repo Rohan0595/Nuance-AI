@@ -1,0 +1,28 @@
+{
+  "name": "ai-news-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "axios": "^1.6.8",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "firebase-admin": "^13.7.0",
+    "google-auth-library": "^10.6.2",
+    "groq-sdk": "^1.1.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.3.2",
+    "node-cache": "^5.1.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
